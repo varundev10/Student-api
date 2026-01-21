@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../db");
 
 exports.register = async (req, res) => {
+  try {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -21,13 +22,17 @@ exports.register = async (req, res) => {
     [name, email, hashedPassword, "user"]
   );
 
-  res.status(201).json({
+   return res.status(201).json({
     message: "User registered successfully ✅",
     userId: result.insertId,
   });
+} catch (error) {
+  console.error("Register Error:", error);
+  return res.status(500).json({ message: "Internal server error" });}
 };
 
 exports.login = async (req, res) => {
+  try {
   const { email, password } = req.body;
   const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -54,8 +59,11 @@ exports.login = async (req, res) => {
     { expiresIn: "10m" }
   );
 
-  res.json({
+   return res.json({
     message: "Login successful ✅",
     token,
   });
+} catch (error) {
+  console.error("Login Error:", error);
+  return res.status(500).json({ message: "Internal server error" });}
 };
